@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 import torch.nn as nn
+import torch.nn.functional as F
 
 # Download training dataset
 dataset = MNIST(root='data/', download=True)
@@ -51,3 +52,23 @@ print("Model Weight Shape: ", model.weight.shape)
 print("Model Weight: ", model.weight)
 print("Model Bias Shape: ", model.bias.shape)
 print("Model Bias: ", model.bias)
+
+class MnistModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.linear = nn.Linear(input_size, num_classes)
+    # Flattens dataset
+    def forward(self, xb):
+        xb = xb.reshape(-1, 28*28)
+        out = self.linear(xb)
+        return out
+
+model = MnistModel()
+print(model.linear)
+
+for images, label in train_loader:
+    print(images.shape)
+    outputs = model(images)
+    break
+
+probs = F.softmax(outputs, dim=1)
